@@ -1,0 +1,15 @@
+/bin/
+*.exe
+*.exe~
+*.dll
+*.log
+.gocache/
+.env
+state/*.json
+state/*.tmp
+# Never commit Telegram secrets/config/session artifacts
+**/*telegram*settings*.json
+**/*telegram*session*
+**/*telegram*token*
+**/*bot*token*
+**/session*.json
