@@ -1,0 +1,46 @@
+name: Release Windows Binary
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Test
+        shell: pwsh
+        run: go test ./...
+
+      - name: Build Windows exe
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          $env:CGO_ENABLED = "0"
+          go build -trimpath -ldflags "-s -w" -o .\dist\mantisx_server_windows_amd64.exe .\cmd\mantisx_server
+
+      - name: Generate SHA256
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash .\dist\mantisx_server_windows_amd64.exe -Algorithm SHA256).Hash
+          "SHA256  $hash  mantisx_server_windows_amd64.exe" | Out-File -FilePath .\dist\SHA256SUMS.txt -Encoding ascii
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/mantisx_server_windows_amd64.exe
+            dist/SHA256SUMS.txt

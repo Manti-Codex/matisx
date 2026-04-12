@@ -1,0 +1,293 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mantisx Telegram Settings</title>
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #111827;
+      --card: rgba(17, 24, 39, 0.82);
+      --line: rgba(148, 163, 184, 0.35);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #06b6d4;
+      --ok: #10b981;
+      --err: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "IBM Plex Sans", "Noto Sans KR", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 500px at 0% 0%, rgba(6, 182, 212, 0.22), transparent 60%),
+        radial-gradient(900px 500px at 100% 100%, rgba(16, 185, 129, 0.16), transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      padding: 28px 16px;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      backdrop-filter: blur(4px);
+    }
+    h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: .2px; }
+    p { margin: 0; color: var(--muted); }
+    .grid {
+      margin-top: 14px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text);
+      background: rgba(2, 6, 23, 0.5);
+      outline: none;
+    }
+    textarea { min-height: 88px; resize: vertical; }
+    .actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform .12s ease, opacity .12s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .primary { background: var(--accent); color: #032026; font-weight: 700; }
+    .ghost { background: transparent; border-color: var(--line); color: var(--text); }
+    .status {
+      margin-top: 12px;
+      font-size: 14px;
+      min-height: 22px;
+      color: var(--muted);
+    }
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--err); }
+    .mono {
+      margin-top: 10px;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(2, 6, 23, 0.5);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Telegram Settings</h1>
+      <p>토큰, 허용 사용자, 워크스페이스, Codex daemon 주소를 저장합니다.</p>
+      <div class="grid">
+        <div>
+          <label for="token">Telegram Bot Token</label>
+          <input id="token" placeholder="123456789:AA..." />
+        </div>
+        <div>
+          <label for="allowed_users">Allowed Users (comma separated)</label>
+          <input id="allowed_users" placeholder="123456789,987654321" />
+        </div>
+        <div>
+          <label for="workspace_dir">Workspace Dir</label>
+          <input id="workspace_dir" placeholder="C:\\work\\mybot" />
+        </div>
+        <div>
+          <label for="codex_daemon_addr">Codex Daemon Addr</label>
+          <input id="codex_daemon_addr" placeholder="127.0.0.1:17997" />
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="btn_save">저장</button>
+        <button class="ghost" id="btn_reload">다시 불러오기</button>
+      </div>
+      <div class="status" id="status"></div>
+      <div class="mono" id="meta"></div>
+    </section>
+
+    <section class="card">
+      <h1>Command Test</h1>
+      <p>`/telegram/command`를 바로 호출해 동작을 확인합니다.</p>
+      <div class="grid">
+        <div>
+          <label for="session_key">Session Key (Command Test용)</label>
+          <input id="session_key" placeholder="tg:chat:123456789 또는 ui:default" />
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label for="command">Command Text</label>
+          <textarea id="command" placeholder="/clear 또는 일반 질문"></textarea>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="btn_send">전송</button>
+      </div>
+      <div class="status" id="cmd_status"></div>
+      <div class="mono" id="cmd_result"></div>
+    </section>
+
+    <section class="card">
+      <h1>Approval Control</h1>
+      <p>승인 기능을 켜고/끄고 현재 상태와 대기 요청 목록을 확인합니다.</p>
+      <div class="actions">
+        <button class="primary" id="btn_approval_on">Approval ON</button>
+        <button class="ghost" id="btn_approval_off">Approval OFF</button>
+        <button class="ghost" id="btn_approval_mode">상태조회</button>
+        <button class="ghost" id="btn_approvals">대기목록</button>
+      </div>
+      <div class="status" id="approval_status"></div>
+      <div class="mono" id="approval_result"></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(el, text, ok) {
+      el.textContent = text || "";
+      el.classList.remove("ok", "err");
+      if (text) el.classList.add(ok ? "ok" : "err");
+    }
+
+    function toPayload() {
+      return {
+        token: $("token").value.trim(),
+        allowed_users: $("allowed_users").value.trim(),
+        workspace_dir: $("workspace_dir").value.trim(),
+        codex_daemon_addr: $("codex_daemon_addr").value.trim()
+      };
+    }
+
+    async function loadSettings() {
+      setStatus($("status"), "불러오는 중...", true);
+      try {
+        const res = await fetch("/api/settings/telegram", { method: "GET" });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "load failed");
+
+        $("token").value = data.token || "";
+        $("allowed_users").value = data.allowed_users || "";
+        $("workspace_dir").value = data.workspace_dir || "";
+        $("codex_daemon_addr").value = data.codex_daemon_addr || "";
+        $("meta").textContent = JSON.stringify({ updated_at: data.updated_at || "" }, null, 2);
+        setStatus($("status"), "설정을 불러왔습니다.", true);
+      } catch (e) {
+        setStatus($("status"), "불러오기 실패: " + e.message, false);
+      }
+    }
+
+    async function saveSettings() {
+      setStatus($("status"), "저장 중...", true);
+      try {
+        const res = await fetch("/api/settings/telegram", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(toPayload())
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "save failed");
+        $("meta").textContent = JSON.stringify({ updated_at: data.updated_at || "" }, null, 2);
+        setStatus($("status"), "저장 완료", true);
+      } catch (e) {
+        setStatus($("status"), "저장 실패: " + e.message, false);
+      }
+    }
+
+    async function sendCommand() {
+      const text = $("command").value.trim();
+      if (!text) {
+        setStatus($("cmd_status"), "명령을 입력하세요.", false);
+        return;
+      }
+      const sessionKey = resolveSessionKey();
+      setStatus($("cmd_status"), "전송 중...", true);
+      $("cmd_result").textContent = "";
+      try {
+        const res = await fetch("/telegram/command", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, session_key: sessionKey, request_id: "ui-" + Date.now() })
+        });
+        const data = await res.json();
+        if (!res.ok || data.ok === false) {
+          throw new Error(data.message || data.error || "command failed");
+        }
+        $("cmd_result").textContent = JSON.stringify(data, null, 2);
+        setStatus($("cmd_status"), "전송 성공", true);
+      } catch (e) {
+        setStatus($("cmd_status"), "전송 실패: " + e.message, false);
+      }
+    }
+
+    async function runQuickCommand(text) {
+      const sessionKey = resolveSessionKey();
+      setStatus($("approval_status"), "전송 중...", true);
+      $("approval_result").textContent = "";
+      try {
+        const res = await fetch("/telegram/command", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, session_key: sessionKey, request_id: "ui-" + Date.now() })
+        });
+        const data = await res.json();
+        if (!res.ok || data.ok === false) {
+          throw new Error(data.message || data.error || "command failed");
+        }
+        $("approval_result").textContent = JSON.stringify(data, null, 2);
+        setStatus($("approval_status"), "요청 성공", true);
+      } catch (e) {
+        setStatus($("approval_status"), "요청 실패: " + e.message, false);
+      }
+    }
+
+    $("btn_save").addEventListener("click", saveSettings);
+    $("btn_reload").addEventListener("click", loadSettings);
+    $("btn_send").addEventListener("click", sendCommand);
+    $("btn_approval_on").addEventListener("click", () => runQuickCommand("/approval_on"));
+    $("btn_approval_off").addEventListener("click", () => runQuickCommand("/approval_off"));
+    $("btn_approval_mode").addEventListener("click", () => runQuickCommand("/approval_mode"));
+    $("btn_approvals").addEventListener("click", () => runQuickCommand("/approvals"));
+
+    loadSettings();
+
+    function resolveSessionKey() {
+      const explicit = $("session_key").value.trim();
+      if (explicit) return explicit;
+      const allowedRaw = ($("allowed_users").value || "").trim();
+      const first = allowedRaw.split(/[,\s;]+/).find(v => /^[0-9]+$/.test(v));
+      if (first) {
+        const auto = "tg:chat:" + first;
+        $("session_key").value = auto;
+        return auto;
+      }
+      $("session_key").value = "ui:default";
+      return "ui:default";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+﻿# 실행 설정 샘플 (참고)
+
+이 프로젝트는 YAML 설정 파일을 직접 로드하지 않습니다.
+실제 설정 입력은 아래 두 경로로 처리됩니다.
+- 환경변수 (`MANTISX_*`)
+- `state/telegram_settings.json` (`GET/PUT /api/settings/telegram`)
+
+아래 값은 운영 시 필요한 핵심 설정의 샘플 매핑입니다.
+
+```yaml
+http_addr: ":18080"                # MANTISX_HTTP_ADDR
+backend_mode: "appserver"          # MANTISX_BACKEND_MODE (기본 appserver)
+command_timeout_sec: 240            # MANTISX_COMMAND_TIMEOUT_SEC
+approval_enabled: true              # MANTISX_APPROVAL_ENABLED (appserver 기본 true)
+workspace_dir: "C:/mantisx"        # MANTISX_WORKSPACE_DIR 또는 settings.workspace_dir
+codex_exe: "codex"                 # MANTISX_CODEX_EXE (appserver)
+codex_daemon_addr: "127.0.0.1:17997" # MANTISX_CODEX_DAEMON_ADDR (rpc)
+telegram:
+  token: ""
+  allowed_users: ""
+```
+
+`state/telegram_settings.json` 예시:
+```json
+{
+  "token": "",
+  "allowed_users": "",
+  "workspace_dir": "C:\\mantisx",
+  "codex_daemon_addr": "127.0.0.1:17997"
+}
+```
