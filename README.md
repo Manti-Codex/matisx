@@ -1,105 +1,79 @@
-# MantisX Binary Distribution
+# MantisX (Binary Distribution)
 
-MantisX는 Telegram으로 Codex를 원격 제어하는 실행파일 배포 패키지입니다.  
-이 저장소는 소스코드 없이 운영에 필요한 최소 파일만 포함합니다.
+MantisX is a Telegram remote controller for Codex.
+This repository is distribution-only and keeps runtime artifacts, not source code.
 
-## 포함 파일
+## Included Files
 - `mantisx_server.exe`
 - `start_mantisx.bat`
+- `README.md`
 - `tools/`
-  - `tools/tools/manifest.json`
-  - `tools/mcp/registry.json`
-  - `tools/skills/registry.json`
 
-## 1) 빠른 시작 (Windows)
-1. Codex CLI 설치
+## Quick Start (Windows)
+1. Install Codex CLI:
 ```powershell
 npm i -g @openai/codex
 ```
-2. Codex 로그인
+2. Login:
 ```powershell
 codex login
 ```
-3. 서버 시작
+3. Start MantisX:
 ```powershell
 .\start_mantisx.bat
 ```
-4. 설정 UI 접속
+4. Open Settings UI:
 - `http://127.0.0.1:18080/ui/telegram-settings.html`
 
-## 2) Telegram 설정
-설정 UI에서 아래를 입력 후 저장합니다.
-- `Token`: BotFather에서 받은 텔레그램 봇 토큰
-- `Allowed Users`: 허용할 Telegram 사용자/채팅 ID (쉼표 구분)
-- `Workspace Dir`: Codex가 작업할 루트 경로
+## Telegram Settings
+In the UI, configure:
+- `Telegram Bot Token`
+- `Allowed Users` (comma-separated chat/user IDs)
+- `Workspace Dir`
+- `Codex Daemon Addr` (if RPC backend is used)
+- `Language` (`ko` or `en`)
 
-저장 후 Telegram에서 봇에게 `/start`를 보내면 연결 상태를 확인할 수 있습니다.
+Language setting controls Telegram-facing messages and progress text.
 
-## 3) 주요 명령 (Telegram)
-- `/help`: 사용 가능한 명령 안내
-- `/clear`: 현재 MCP 세션 초기화
-- `/stop_mcp`: 백엔드 중지
-- `/approval on`, `/approval off`: 승인 모드 전환
-- `1,2,3,4`: 승인 빠른 입력
-  - `1=허용`, `2=세션 허용`, `3=거절`, `4=취소`
-- `/memory`: 현재 메모리 상태 조회
-- `/remember <text>`: 장기기억 저장
-- `/memory_clear`: 현재 세션 메모리 삭제
+## Memory System (3 Layers)
+MantisX stores memory per session:
+- Long-term memory: explicit facts/preferences (`/remember`)
+- Mid-term memory: rolling turn summaries
+- Temporary memory: recent conversation buffer
 
-## 4) 메모리 동작 (중요)
-MantisX는 세션 단위로 3층 메모리를 사용합니다.
-
-- 장기기억(Long)
-  - 사용자 규칙/선호/고정 정보
-  - `/remember`로 명시 저장
-- 중기기억(Mid)
-  - 최근 턴 요약 누적
-  - 대화가 길어져도 맥락 유지용
-- 임시기억(Temp)
-  - 직전 대화 버퍼
-  - 빠른 문맥 이어받기용
-
-저장 위치:
+Runtime file:
 - `state/memory_layers.json`
 
-특징:
-- 서버 재시작 후에도 파일에서 자동 복원
-- 세션별로 분리되어 관리
+Behavior:
+- Auto-loaded on server restart
+- Session-scoped isolation
+- Can be inspected with `/memory`
+- Can be cleared with `/memory_clear`
 
-## 5) 런타임 파일
-서버 실행 후 `state/`가 자동 생성됩니다.
-- `state/telegram_settings.json`: Telegram 설정 저장
-- `state/memory_layers.json`: 메모리 저장
+## Telegram Commands
+- `/start`, `/help`
+- `/clear`, `/stop_mcp`
+- `/approval on`, `/approval off`, `/approval_mode`
+- `/approvals`, `/approve [id]`, `/deny [id]`
+- Quick approval: `1`, `2`, `3`, `4`
+- `/memory`, `/remember <text>`, `/remember_cancel`, `/memory_clear`
 
-## 6) 장애 대응
-### A. 설정 페이지 접속 불가
-- 서버가 떠 있는지 확인: `http://127.0.0.1:18080/healthz`
-- 방화벽/포트 점유 확인
+## Troubleshooting
+- Health check:
+  - `http://127.0.0.1:18080/healthz`
+- If Codex login is missing:
+  - run `codex login`
+- If bot does not respond:
+  - verify token + allowed user ID in Settings UI
+  - save settings and send `/start` again
 
-### B. Codex 관련 오류
-- `codex` 미설치/경로 문제:
-  - `npm i -g @openai/codex`
-  - 필요 시 환경변수 `MANTISX_CODEX_EXE` 지정
-- 로그인 미완료:
-  - `codex login`
-
-### C. Telegram 응답 없음
-- Token/Allowed Users 값 재확인
-- Allowed Users에 실제 본인 ID가 있는지 확인
-- 저장 후 봇에 `/start` 재전송
-
-## 7) 운영 팁
-- 배포 폴더는 `mantisx_server.exe`, `start_mantisx.bat`, `tools/`만 유지 권장
-- `state/`는 운영 데이터이므로 백업 대상에 포함 권장
-- 승인 모드는 기본적으로 켜고 운영하는 것을 권장
-
-## 8) Git Push 규칙 (중요)
-이 저장소는 배포 전용으로 아래 파일만 push합니다.
+## Git Push Policy (Required)
+Only push:
 - `mantisx_server.exe`
 - `README.md`
-- `tools/` (하위 파일 포함)
+- `tools/` (all children)
 
-push 금지:
-- 소스코드 디렉터리 (`cmd/`, `internal/`, `docs/` 등)
-- 실행 중 생성되는 데이터 (`state/`)
-- 임시 작업 폴더 (`tmp_*`)
+Do not push:
+- source folders (`cmd/`, `internal/`, `docs/`, etc.)
+- runtime data (`state/`)
+- temporary folders (`tmp_*`)
