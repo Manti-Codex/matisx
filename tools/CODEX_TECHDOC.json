@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "type": "mantisx_codex_techdoc_index",
+  "root": "tools",
+  "audience": "codex",
+  "directories": [
+    {
+      "name": "tools",
+      "path": "tools/tools",
+      "spec": "tools/tools/CODEX_TECHDOC.json",
+      "required_files": [
+        "tools/tools/manifest.json"
+      ]
+    },
+    {
+      "name": "mcp",
+      "path": "tools/mcp",
+      "spec": "tools/mcp/CODEX_TECHDOC.json",
+      "required_files": [
+        "tools/mcp/registry.json"
+      ]
+    },
+    {
+      "name": "skills",
+      "path": "tools/skills",
+      "spec": "tools/skills/CODEX_TECHDOC.json",
+      "required_files": [
+        "tools/skills/registry.json"
+      ]
+    }
+  ],
+  "global_rules": [
+    "Do not place runtime source code in tools/*; keep extension metadata and registries only.",
+    "When adding entries, preserve schema_version and existing keys unless a migration is explicitly defined.",
+    "Paths are workspace-relative with forward slashes."
+  ]
+}

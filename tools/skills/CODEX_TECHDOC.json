@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "type": "mantisx_skill_registry_contract",
+  "audience": "codex",
+  "primary_registry": "tools/skills/registry.json",
+  "expected_top_level_keys": [
+    "schema_version",
+    "skills"
+  ],
+  "skill_entry_contract": {
+    "required_fields": [
+      "name",
+      "path"
+    ],
+    "recommended_fields": [
+      "version",
+      "description",
+      "entry",
+      "enabled",
+      "tags"
+    ]
+  },
+  "write_policy": [
+    "Paths must stay inside workspace.",
+    "Prefer deterministic names and semantic version values.",
+    "Do not auto-enable experimental skills unless explicitly requested."
+  ]
+}
