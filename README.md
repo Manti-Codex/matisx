@@ -1,7 +1,14 @@
-# MantisX (Binary Distribution)
+# MantisX - Codex Telegram Remote Controller (Binary Distribution)
 
-MantisX is a Telegram remote controller for Codex.
+MantisX is a Codex Telegram remote controller for Windows.
+If users search for `codex telegram`, `telegram codex`, or `codex remote control`, this project is intended to match that use case.
 This repository is distribution-only and keeps runtime artifacts, not source code.
+
+## What This Is
+- Telegram bot interface for Codex
+- Remote Codex control from mobile Telegram chat
+- Approval flow support (accept, accept for session, decline, cancel)
+- Session memory with restart recovery
 
 ## Included Files
 - `mantisx_server.exe`
