@@ -1,0 +1,23 @@
+﻿{
+  "schema_version": "1.0",
+  "tool_checks": [
+    {"name": "codex", "env": "MANTISX_CODEX_EXE", "default": "codex"},
+    {"name": "go", "command": "go"},
+    {"name": "cmd", "command": "cmd"},
+    {"name": "powershell", "command": "powershell"},
+    {"name": "taskkill", "command": "taskkill"},
+    {"name": "netstat", "command": "netstat"}
+  ],
+  "file_checks": [
+    {"name": "mantisx_server.exe", "path": "cmd/bin/mantisx_server.exe"},
+    {"name": "run_mantisx_stack.bat", "path": "run_mantisx_stack.bat"},
+    {"name": "rebuild_restart_mantisx_stack.bat", "path": "rebuild_restart_mantisx_stack.bat"},
+    {"name": "trigger_rebuild_restart_mantisx_stack.bat", "path": "trigger_rebuild_restart_mantisx_stack.bat"}
+  ],
+  "mcp_checks": [
+    {"name": "registry", "path": "tools/mcp/registry.json"}
+  ],
+  "skill_checks": [
+    {"name": "registry", "path": "tools/skills/registry.json"}
+  ]
+}

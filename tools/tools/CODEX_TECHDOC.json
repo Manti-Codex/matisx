@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "type": "mantisx_tool_manifest_contract",
+  "audience": "codex",
+  "primary_registry": "tools/tools/manifest.json",
+  "expected_top_level_keys": [
+    "schema_version",
+    "tool_checks",
+    "file_checks",
+    "mcp_checks",
+    "skill_checks"
+  ],
+  "entry_contracts": {
+    "tool_checks": {
+      "required_fields_any_of": [
+        [
+          "name",
+          "command"
+        ],
+        [
+          "name",
+          "env",
+          "default"
+        ]
+      ]
+    },
+    "file_checks": {
+      "required_fields": [
+        "name",
+        "path"
+      ]
+    },
+    "mcp_checks": {
+      "required_fields": [
+        "name",
+        "path"
+      ]
+    },
+    "skill_checks": {
+      "required_fields": [
+        "name",
+        "path"
+      ]
+    }
+  },
+  "write_policy": [
+    "Additive changes are preferred.",
+    "Do not remove existing checks unless deprecated by explicit user request.",
+    "Keep names stable to avoid breaking /server_tools output diffs."
+  ]
+}
