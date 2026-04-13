@@ -4,10 +4,16 @@ MantisX is a Codex Telegram remote controller for Windows.
 If users search for `codex telegram`, `telegram codex`, or `codex remote control`, this project is intended to match that use case.
 This repository is distribution-only and keeps runtime artifacts, not source code.
 
+## Keywords
+- codex telegram
+- telegram codex remote control
+- codex remote controller for windows
+
 ## What This Is
 - Telegram bot interface for Codex
 - Remote Codex control from mobile Telegram chat
 - Approval flow support (accept, accept for session, decline, cancel)
+- Approval helper keyboard: when approval is pending, Telegram `1/2/3/4` buttons are sent automatically
 - Session memory with restart recovery
 
 ## Included Files
@@ -30,7 +36,7 @@ codex login
 .\start_mantisx.bat
 ```
 4. Open Settings UI:
-- `http://127.0.0.1:18080/ui/telegram-settings.html`
+- `http://127.0.0.1:18081/ui/telegram-settings.html`
 
 ## Telegram Settings
 In the UI, configure:
@@ -39,6 +45,23 @@ In the UI, configure:
 - `Workspace Dir`
 - `Codex Daemon Addr` (if RPC backend is used)
 - `Language` (`ko` or `en`)
+
+For dual-workspace operation:
+- Add extra workdir(s) and apply:
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\workdir_manager.ps1 add "C:\your\extra\dir"
+```
+- Remove:
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\workdir_manager.ps1 remove "C:\your\extra\dir"
+```
+- List:
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\workdir_manager.ps1 list
+```
+- `workspace_dir` is automatically set to `.\state\workspace_root` and includes:
+  - `mantisx-root` -> `c:\mantisx`
+  - one junction per extra workdir
 
 Language setting controls Telegram-facing messages and progress text.
 
@@ -63,11 +86,16 @@ Behavior:
 - `/approval on`, `/approval off`, `/approval_mode`
 - `/approvals`, `/approve [id]`, `/deny [id]`
 - Quick approval: `1`, `2`, `3`, `4`
+- You can use either keyboard buttons or manual number input (`1/2/3/4`)
+- Workdir helper (execute via Codex):
+  - `/add_workdir <abs_path>` -> run `tools/workdir_manager.ps1 add "<abs_path>"`
+  - `/remove_workdir <abs_path>` -> run `tools/workdir_manager.ps1 remove "<abs_path>"`
+  - `/list_workdir` -> run `tools/workdir_manager.ps1 list`
 - `/memory`, `/remember <text>`, `/remember_cancel`, `/memory_clear`
 
 ## Troubleshooting
 - Health check:
-  - `http://127.0.0.1:18080/healthz`
+  - `http://127.0.0.1:18081/healthz`
 - If Codex login is missing:
   - run `codex login`
 - If bot does not respond:
@@ -82,5 +110,6 @@ Only push:
 
 Do not push:
 - source folders (`cmd/`, `internal/`, `docs/`, etc.)
+- local source staging folder (`src/`)
 - runtime data (`state/`)
 - temporary folders (`tmp_*`)
